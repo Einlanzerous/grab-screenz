@@ -2,10 +2,27 @@ const { writeFile } = require('fs');
 const { desktopCapturer, remote } = require('electron');
 const { Menu, dialog } = remote;
 
+// Create mediaRecorder instance to capture footage
+let mediaRecorder;
+const recordedChunks = [];
+
 // Buttons
 const videoElement = document.querySelector('video');
+
 const startBtn = document.getElementById('startBtn');
+startBtn.onclick = element => {
+  mediaRecorder.start();
+  startBtn.classList.add('is-danger');
+  startBtn.innerText = 'Recording';
+};
+
 const stopBtn = document.getElementById('stopBtn');
+stopBtn.onclick = element => {
+  mediaRecorder.stop();
+  startBtn.classList.remove('is-danger');
+  startBtn.innerText = 'Start';
+};
+
 const videoSelectBtn = document.getElementById('videoSelectBtn');
 videoSelectBtn.onclick = getVideoSources;
 
@@ -26,10 +43,6 @@ async function getVideoSources() {
 
   videoOptionsMenu.popup();
 }
-
-// Create mediaRecorder instance to capture footage
-let mediaRecorder;
-const recordedChunks = [];
 
 // Change the source window to record
 async function selectSource(source) {
@@ -56,7 +69,7 @@ async function selectSource(source) {
   const options = {
     mimeType: 'video/webm; codecs=vp9'
   };
-  mediaRecorder = new mediaRecorder(stream, options);
+  mediaRecorder = new MediaRecorder(stream, options);
 
   // Register Event Handlers for Media Recorder
   mediaRecorder.ondataavailable = handleDataAvailable;
